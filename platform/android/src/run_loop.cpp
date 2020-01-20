@@ -55,6 +55,15 @@ int looperCallbackDefault(int fd, int, void* data) {
     return 1;
 }
 
+int looperCallbackReadEvent(int fd, int, void* data) {
+    auto runLoopImpl = reinterpret_cast<RunLoop::Impl*>(data);
+
+    if (runLoopImpl->readPoll.count(fd)) {
+        runLoopImpl->readPoll[fd](fd, RunLoop::Event::Read);
+    }
+    return 1;
+}
+
 } // namespace
 
 namespace mbgl {
@@ -243,12 +252,28 @@ void RunLoop::stop() {
     });
 }
 
-void RunLoop::addWatch(int, Event, std::function<void(int, Event)>&&) {
-    throw std::runtime_error("Not implemented.");
+void RunLoop::addWatch(int fd, Event event, std::function<void(int, Event)>&& cb) {
+    MBGL_VERIFY_THREAD(tid);
+
+    if (event == Event::Read) {
+        impl->readPoll[fd] = std::move(cb);
+
+        ALooper* looper = ALooper_forThread();
+        ALooper_addFd(
+            looper, fd, ALOOPER_POLL_CALLBACK, ALOOPER_EVENT_INPUT, looperCallbackReadEvent, this->impl.get());
+    }
 }
 
-void RunLoop::removeWatch(int) {
-    throw std::runtime_error("Not implemented.");
+void RunLoop::removeWatch(int fd) {
+    MBGL_VERIFY_THREAD(tid);
+
+    auto it = impl->readPoll.find(fd);
+    if (it != impl->readPoll.end()) {
+        impl->readPoll.erase(it);
+
+        ALooper* looper = ALooper_forThread();
+        ALooper_removeFd(looper, fd);
+    }
 }
 
 } // namespace util
