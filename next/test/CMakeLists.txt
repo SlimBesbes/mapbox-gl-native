@@ -110,7 +110,7 @@ add_library(
     ${MBGL_ROOT}/test/util/url.test.cpp
 )
 
-if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL Android)
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL Android AND ANDROID_NATIVE_API_LEVEL VERSION_LESS 24)
     message("Target platform does not support HTTP tests or dependencies not found.")
 
     set(MBGL_TEST_HAS_TEST_SERVER 0)
