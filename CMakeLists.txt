@@ -13,12 +13,6 @@ option(MBGL_WITH_COVERAGE "Enable code coverage collection" OFF)
 option(MBGL_WITH_QT "Build Mapbox GL Qt bindings" OFF)
 option(MBGL_WITH_SANITIZER "Use [address|thread|undefined] here" OFF)
 
-if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-endif()
-
 add_library(
     mbgl-compiler-options INTERFACE
 )
@@ -79,7 +73,7 @@ if(MBGL_WITH_QT)
 endif()
 
 add_library(
-    mbgl-core STATIC
+    mbgl-core
     ${PROJECT_SOURCE_DIR}/include/mbgl/actor/actor.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/actor/actor_ref.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/actor/aspiring_actor.hpp
