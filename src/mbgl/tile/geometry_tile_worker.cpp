@@ -391,7 +391,7 @@ void GeometryTileWorker::parse() {
             if (layout->hasDependencies()) {
                 layouts.push_back(std::move(layout));
             } else {
-                layout->createBucket({}, featureIndex, renderData, firstLoad, showCollisionBoxes);
+                layout->createBucket({}, featureIndex, renderData, firstLoad, showCollisionBoxes, id.canonical);
             }
         } else {
             const Filter& filter = leaderImpl.filter;
@@ -467,7 +467,8 @@ void GeometryTileWorker::finalizeLayout() {
             }
 
             // layout adds the bucket to buckets
-            layout->createBucket(iconAtlas.patternPositions, featureIndex, renderData, firstLoad, showCollisionBoxes);
+            layout->createBucket(
+                iconAtlas.patternPositions, featureIndex, renderData, firstLoad, showCollisionBoxes, id.canonical);
         }
     }
 

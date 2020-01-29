@@ -113,9 +113,11 @@ void FillBucket::addFeature(const GeometryTileFeature& feature, const GeometryCo
     for (auto& pair : paintPropertyBinders) {
         const auto it = patternDependencies.find(pair.first);
         if (it != patternDependencies.end()){
-            pair.second.populateVertexVectors(feature, vertices.elements(), index, patternPositions, it->second);
+            pair.second.populateVertexVectors(
+                feature, vertices.elements(), index, patternPositions, it->second, CanonicalTileID(0, 0, 0));
         } else {
-            pair.second.populateVertexVectors(feature, vertices.elements(), index, patternPositions, {});
+            pair.second.populateVertexVectors(
+                feature, vertices.elements(), index, patternPositions, {}, CanonicalTileID(0, 0, 0));
         }
     }
 }

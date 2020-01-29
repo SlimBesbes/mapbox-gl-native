@@ -90,7 +90,7 @@ void CircleBucket::addFeature(const GeometryTileFeature& feature, const Geometry
     }
 
     for (auto& pair : paintPropertyBinders) {
-        pair.second.populateVertexVectors(feature, vertices.elements(), featureIndex, {}, {});
+        pair.second.populateVertexVectors(feature, vertices.elements(), featureIndex, {}, {}, CanonicalTileID(0, 0, 0));
     }
 }
 

@@ -204,6 +204,11 @@ public:
         auto evaluate(float z, const GeometryTileFeature& feature) const {
             return evaluate(z, feature, this->template get<P>(), P::defaultValue());
         }
+        
+        template <class P>
+        auto evaluate(float z, const GeometryTileFeature& feature, const CanonicalTileID& canonical) const {
+            return evaluate(z, feature, canonical, this->template get<P>(), P::defaultValue());
+        }
 
         template <class P>
         auto evaluate(float z, const GeometryTileFeature& feature, const FeatureState& state) const {

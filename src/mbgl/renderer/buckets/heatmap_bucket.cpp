@@ -87,7 +87,7 @@ void HeatmapBucket::addFeature(const GeometryTileFeature& feature, const Geometr
     }
 
     for (auto& pair : paintPropertyBinders) {
-        pair.second.populateVertexVectors(feature, vertices.elements(), featureIndex, {}, {});
+        pair.second.populateVertexVectors(feature, vertices.elements(), featureIndex, {}, {}, CanonicalTileID(0, 0, 0));
     }
 }
 

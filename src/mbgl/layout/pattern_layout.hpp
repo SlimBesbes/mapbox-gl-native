@@ -152,7 +152,12 @@ public:
         return hasPattern;
     }
 
-    void createBucket(const ImagePositions& patternPositions, std::unique_ptr<FeatureIndex>& featureIndex, std::unordered_map<std::string, LayerRenderData>& renderData, const bool, const bool) override {
+    void createBucket(const ImagePositions& patternPositions,
+                      std::unique_ptr<FeatureIndex>& featureIndex,
+                      std::unordered_map<std::string, LayerRenderData>& renderData,
+                      const bool,
+                      const bool,
+                      const CanonicalTileID&) override {
         auto bucket = std::make_shared<BucketType>(layout, layerPropertiesMap, zoom, overscaling);
         for (auto & patternFeature : features) {
             const auto i = patternFeature.i;
