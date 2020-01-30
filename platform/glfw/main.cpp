@@ -21,28 +21,9 @@
 #include <cstdio>
 #include <array>
 
-#include <mbgl/style/expression/dsl.hpp>
-#include <mbgl/style/image.hpp>
-#include <mbgl/style/layers/circle_layer.hpp>
-#include <mbgl/style/layers/fill_extrusion_layer.hpp>
-#include <mbgl/style/layers/fill_layer.hpp>
-#include <mbgl/style/layers/line_layer.hpp>
-#include <mbgl/style/layers/symbol_layer.hpp>
-
 namespace {
 
 GLFWView* view = nullptr;
-//
-// std::string read_file(const std::string &filename) {
-//    std::ifstream file(filename, std::ios::binary);
-//    if (file.good()) {
-//        std::stringstream data;
-//        data << file.rdbuf();
-//        return data.str();
-//    } else {
-//        throw std::runtime_error(std::string("Cannot read file ") + filename);
-//    }
-//}
 
 } // namespace
 
@@ -209,9 +190,20 @@ int main(int argc, char *argv[]) {
         });
     });
 
-    view->setWindowTitle("WithinExpressionTest");
-    map.getStyle().loadURL("mapbox://styles/mizh0601/ck5mbn0jx1yx71ipomhpv06xv");
-    //    map.getStyle().loadJSON(read_file("/Users/miaozhao/Work/MacOs/style.json"));
+    // Load style
+    if (style.empty()) {
+        const char *url = getenv("MAPBOX_STYLE_URL");
+        if (url == nullptr) {
+            mbgl::util::default_styles::DefaultStyle newStyle = mbgl::util::default_styles::orderedStyles[0];
+            style = newStyle.url;
+            view->setWindowTitle(newStyle.name);
+        } else {
+            style = url;
+            view->setWindowTitle(url);
+        }
+    }
+
+    map.getStyle().loadURL(style);
 
     view->run();
 

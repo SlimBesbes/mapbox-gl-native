@@ -157,7 +157,7 @@ public:
                       std::unordered_map<std::string, LayerRenderData>& renderData,
                       const bool,
                       const bool,
-                      const CanonicalTileID&) override {
+                      const CanonicalTileID& canonical) override {
         auto bucket = std::make_shared<BucketType>(layout, layerPropertiesMap, zoom, overscaling);
         for (auto & patternFeature : features) {
             const auto i = patternFeature.i;
@@ -165,7 +165,7 @@ public:
             const PatternLayerMap& patterns = patternFeature.patterns;
             const GeometryCollection& geometries = feature->getGeometries();
 
-            bucket->addFeature(*feature, geometries, patternPositions, patterns, i);
+            bucket->addFeature(*feature, geometries, patternPositions, patterns, i, canonical);
             featureIndex->insert(geometries, i, sourceLayerID, bucketLeaderID);
         }
         if (bucket->hasData()) {

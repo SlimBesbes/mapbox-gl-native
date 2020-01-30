@@ -324,12 +324,18 @@ public:
                               std::size_t index,
                               const ImagePositions&,
                               const optional<PatternDependency>&,
-                              const CanonicalTileID&,
+                              const CanonicalTileID& canonical,
                               const style::expression::Value& formattedSection) override {
         using style::expression::EvaluationContext;
         Range<T> range = {
-                expression.evaluate(EvaluationContext(zoomRange.min, &feature).withFormattedSection(&formattedSection), defaultValue),
-                expression.evaluate(EvaluationContext(zoomRange.max, &feature).withFormattedSection(&formattedSection), defaultValue),
+            expression.evaluate(EvaluationContext(zoomRange.min, &feature)
+                                    .withFormattedSection(&formattedSection)
+                                    .withCanonicalTileID(canonical),
+                                defaultValue),
+            expression.evaluate(EvaluationContext(zoomRange.max, &feature)
+                                    .withFormattedSection(&formattedSection)
+                                    .withCanonicalTileID(canonical),
+                                defaultValue),
         };
         this->statistics.add(range.min);
         this->statistics.add(range.max);

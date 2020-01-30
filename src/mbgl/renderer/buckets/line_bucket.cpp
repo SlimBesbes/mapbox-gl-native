@@ -27,9 +27,12 @@ LineBucket::LineBucket(const LineBucket::PossiblyEvaluatedLayoutProperties layou
 
 LineBucket::~LineBucket() = default;
 
-void LineBucket::addFeature(const GeometryTileFeature& feature, const GeometryCollection& geometryCollection,
-                            const ImagePositions& patternPositions, const PatternLayerMap& patternDependencies,
-                            std::size_t index) {
+void LineBucket::addFeature(const GeometryTileFeature& feature,
+                            const GeometryCollection& geometryCollection,
+                            const ImagePositions& patternPositions,
+                            const PatternLayerMap& patternDependencies,
+                            std::size_t index,
+                            const CanonicalTileID& canonical) {
     for (auto& line : geometryCollection) {
         addGeometry(line, feature);
     }
@@ -38,10 +41,9 @@ void LineBucket::addFeature(const GeometryTileFeature& feature, const GeometryCo
         const auto it = patternDependencies.find(pair.first);
         if (it != patternDependencies.end()){
             pair.second.populateVertexVectors(
-                feature, vertices.elements(), index, patternPositions, it->second, CanonicalTileID(0, 0, 0));
+                feature, vertices.elements(), index, patternPositions, it->second, canonical);
         } else {
-            pair.second.populateVertexVectors(
-                feature, vertices.elements(), index, patternPositions, {}, CanonicalTileID(0, 0, 0));
+            pair.second.populateVertexVectors(feature, vertices.elements(), index, patternPositions, {}, canonical);
         }
     }
 }
