@@ -189,4 +189,101 @@ if(MBGL_IOS_RENDER_TEST)
 
     set_target_properties(RenderTestAppTests PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${MBGL_ROOT}/render-test/ios/tests/Info.plist)
 endif()
+
+if(MBGL_IOS_UNIT_TEST)
+    set(RESOURCES ${MBGL_ROOT}/test/ios/Main.storyboard ${MBGL_ROOT}/test/ios/LaunchScreen.storyboard ${MBGL_ROOT}/test/fixtures ${MBGL_ROOT}/mapbox-gl-js/src/style-spec/reference/)
+
+    add_executable(
+        UnitTestsApp
+        ${MBGL_ROOT}/test/ios/ios_test_runner.hpp
+        ${MBGL_ROOT}/test/ios/ios_test_runner.cpp
+        ${MBGL_ROOT}/test/ios/AppDelegate.h
+        ${MBGL_ROOT}/test/ios/AppDelegate.m
+        ${MBGL_ROOT}/test/ios/ViewController.h
+        ${MBGL_ROOT}/test/ios/ViewController.m
+        ${MBGL_ROOT}/test/ios/iosTestRunner.h
+        ${MBGL_ROOT}/test/ios/iosTestRunner.mm
+        ${MBGL_ROOT}/test/ios/main.m
+        ${RESOURCES}
+    )
+    initialize_ios_target(UnitTestsApp)
+
+    target_compile_options(
+        UnitTestsApp
+        PRIVATE -Wno-shorten-64-to-32
+    )
+
+    set_target_properties(
+        UnitTestsApp
+        PROPERTIES
+            MACOSX_BUNDLE
+            TRUE
+            MACOSX_BUNDLE_IDENTIFIER
+            com.mapbox.UnitTestsApp
+            MACOSX_BUNDLE_INFO_PLIST
+            ${MBGL_ROOT}/test/ios/Info.plist
+            RESOURCE
+            "${RESOURCES}"
+    )
+
+    target_include_directories(
+        UnitTestsApp
+        PUBLIC {MBGL_ROOT}/test/include ${MBGL_ROOT}/include
+    )
+
+    target_include_directories(
+        UnitTestsApp
+        PRIVATE
+            ${MBGL_ROOT}/platform/darwin/src
+            ${MBGL_ROOT}/platform/darwin/include
+            ${MBGL_ROOT}/platform/darwin/include/mbgl/interface/
+            ${MBGL_ROOT}/platform/default/include
+            ${MBGL_ROOT}/src
+    )
+
+    target_include_directories(
+        UnitTestsApp
+        PUBLIC ${MBGL_ROOT}/test/ios
+    )
+
+    target_link_libraries(
+        UnitTestsApp
+        PRIVATE
+            "-framework CoreGraphics"
+            "-framework CoreLocation"
+            "-framework Foundation"
+            "-framework OpenGLES"
+            "-framework QuartzCore"
+            "-framework UIKit"
+            mbgl-test
+    )
+
+    set_target_properties(UnitTestsApp PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+    set_target_properties(UnitTestsApp PROPERTIES XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+
+
+    find_package(XCTest REQUIRED)
+
+    xctest_add_bundle(UnitTestsAppTests UnitTestsApp ${MBGL_ROOT}/test/ios/tests/Tests.m)
+
+    set_target_properties(
+        UnitTestsAppTests
+        PROPERTIES
+            XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET
+            "${IOS_DEPLOYMENT_TARGET}"
+            XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH
+            $<$<CONFIG:Debug>:YES>
+    )
+
+    target_include_directories(
+        UnitTestsAppTests
+        PUBLIC ${MBGL_ROOT}/test/ios
+    )
+
+    xctest_add_test(XCTest.UnitTestsApp UnitTestsAppTests)
+
+    set_target_properties(UnitTestsAppTests PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${MBGL_ROOT}/test/ios/tests/Info.plist)
+    set_target_properties(UnitTestsAppTests PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+    set_target_properties(UnitTestsAppTests PROPERTIES XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+endif()
 unset(IOS_DEPLOYMENT_TARGET CACHE)

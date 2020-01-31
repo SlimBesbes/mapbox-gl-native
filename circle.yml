@@ -14,144 +14,8 @@ workflows:
   version: 2
   development:
     jobs:
-      - sanity-checks
-      - android-benchmark-runner
-      - android-api-breakage
-      - android-render-test-runner
-      - android-unit-test-runner
-      - ios-render-test-runner
-      - baselines:
-          requires:
-            - android-arm64-v8a-release
-            - android-armeabi-v7a-release
-            - android-render-test-runner
-            - android-x86-release
-            - android-x86_64-release
-            - linux-clang8-release
-            - linux-gcc8-release
-            - macos-xcode11-release
-            - ios-render-test-runner
-      - build-template:
-          name: android-armeabi-v7a-release
-          executor_name: ubuntu-disco
-          target_is_android: true
-          config_params: '-G Ninja -DCMAKE_INSTALL_PREFIX=/tmp/workspace/install/$CIRCLE_JOB -DCMAKE_TOOLCHAIN_FILE=/opt/android/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_CCACHE=/usr/bin/ccache -DANDROID_ABI=armeabi-v7a'
-          install: true
-      - build-template:
-          name: android-arm64-v8a-release
-          executor_name: ubuntu-disco
-          target_is_android: true
-          config_params: '-G Ninja -DCMAKE_INSTALL_PREFIX=/tmp/workspace/install/$CIRCLE_JOB -DCMAKE_TOOLCHAIN_FILE=/opt/android/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_CCACHE=/usr/bin/ccache -DANDROID_ABI=arm64-v8a'
-          build_params: '--target libmapbox-gl.so'
-          install: true
-      - build-template:
-          name: android-x86-release
-          executor_name: ubuntu-disco
-          target_is_android: true
-          config_params: '-G Ninja -DCMAKE_INSTALL_PREFIX=/tmp/workspace/install/$CIRCLE_JOB -DCMAKE_TOOLCHAIN_FILE=/opt/android/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_CCACHE=/usr/bin/ccache -DANDROID_ABI=x86'
-          build_params: '--target libmapbox-gl.so'
-          install: true
-      - build-template:
-          name: android-x86_64-release
-          executor_name: ubuntu-disco
-          target_is_android: true
-          config_params: '-G Ninja -DCMAKE_INSTALL_PREFIX=/tmp/workspace/install/$CIRCLE_JOB -DCMAKE_TOOLCHAIN_FILE=/opt/android/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_CCACHE=/usr/bin/ccache -DANDROID_ABI=x86_64'
-          build_params: '--target libmapbox-gl.so'
-          install: true
-      - build-template:
-          name: linux-gcc8-release
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          config_params: '-G Ninja -DCMAKE_INSTALL_PREFIX=/tmp/workspace/install/$CIRCLE_JOB -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8'
-          install: true
-          metrics: true
-          style_tests: true
-      - build-template:
-          name: linux-gcc4.9-release
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          requires:
-            - linux-gcc8-release
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=gcc-4.9 -DCMAKE_CXX_COMPILER=g++-4.9'
-          build_params: '--target mbgl-glfw'
-          test_params: '-N -Q'
-      - build-template:
-          name: linux-gcc8-debug-coverage
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          requires:
-            - linux-gcc8-release
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DCMAKE_BUILD_TYPE=Debug -DMBGL_WITH_COVERAGE=ON'
-          style_tests: true
-      - build-template:
-          name: linux-clang8-release
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          config_params: '-G Ninja -DCMAKE_INSTALL_PREFIX=/tmp/workspace/install/$CIRCLE_JOB -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=clang-8 -DCMAKE_CXX_COMPILER=clang++-8'
-          install: true
-          metrics: true
-          style_tests: true
-      - build-template:
-          name: FIXME-linux-asan
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          requires:
-            - sanity-checks
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=clang-8 -DCMAKE_CXX_COMPILER=clang++-8 -DMBGL_WITH_SANITIZER=address'
-          test_params: '|| true'
-          style_tests: true
-      - build-template:
-          name: linux-tsan
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          requires:
-            - sanity-checks
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=clang-8 -DCMAKE_CXX_COMPILER=clang++-8 -DMBGL_WITH_SANITIZER=thread'
-          style_tests: true
-      - build-template:
-          name: FIXME-linux-valgrind
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=clang-8 -DCMAKE_CXX_COMPILER=clang++-8 -DCMAKE_CXX_FLAGS=-DSANITIZE'
-          test_params: '-j 4 -E "mbgl-node|gl-benchmark" -D ExperimentalMemCheck || true'
-      - build-template:
-          name: FIXME-linux-ubsan
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          requires:
-            - sanity-checks
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=clang-8 -DCMAKE_CXX_COMPILER=clang++-8 -DMBGL_WITH_SANITIZER=undefined'
-          test_params: '|| true'
-          style_tests: true
-      - build-template:
-          name: qt5-linux-gcc5-release
-          executor_name: ubuntu-disco
-          target_is_linux: true
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER=gcc-5 -DCMAKE_CXX_COMPILER=g++-5 -DMBGL_WITH_QT=ON'
-      - build-template:
-          name: qt5-macos-gcc5-release
-          executor_name: macos-11_0_0
-          target_is_macos: true
-          requires:
-            - qt5-linux-gcc5-release
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DMBGL_WITH_QT=ON -DCMAKE_PREFIX_PATH=$(echo /usr/local/Cellar/qt/5.*/lib/cmake)'
-      - build-template:
-          name: macos-xcode11-release
-          executor_name: macos-11_0_0
-          target_is_macos: true
-          config_params: '-G Ninja -DCMAKE_INSTALL_PREFIX=/tmp/workspace/install/$CIRCLE_JOB -DCMAKE_CXX_COMPILER_LAUNCHER=ccache'
-          install: true
-          metrics: true
-          style_tests: true
-      - build-template:
-          name: macos-xcode11-debug
-          executor_name: macos-11_0_0
-          target_is_macos: true
-          requires:
-            - macos-xcode11-release
-          config_params: '-G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_BUILD_TYPE=Debug'
-          style_tests: true
-      - ios-xcode11-release
+      - ios-unit-test-runner
+
 
 #
 # Executors: we currently support two executors, one based on Ubuntu 19.04 aka Disco
@@ -397,6 +261,38 @@ jobs:
                 rm -rf *.zip
               fi
             fi
+      - save
+  ios-unit-test-runner:
+    executor: macos-11_0_0
+    steps:
+      - checkout
+      - prepare
+      - prepare-macos
+      - run:
+          name: Prepare codesign keychain
+          command: |
+            cd test/ios
+            fastlane run create_keychain name:fastlane_keychain password:$FASTLANE_PASSWORD timeout:false unlock:true
+            fastlane match
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $FASTLANE_PASSWORD fastlane_keychain
+            /usr/bin/env xcrun security find-identity -v -p codesigning
+      - run:
+          name: Build IOS UnitTestsApp
+          command: |
+            cd test/ios
+            cmake ../../next -B Build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DMBGL_IOS_UNIT_TEST=ON
+            cd Build
+            xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj -scheme UnitTestsApp build-for-testing -arch arm64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Release
+            xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj build -target UnitTestsAppTests -arch arm64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Release
+      - run:
+          name: Codesign UnitTestsApp for running on a physical device
+          command: |
+            cd test/ios
+            ./codesigning/generate-entitlements.swift
+            ls codesigning
+            cd Build
+            ../codesigning/codesign_all.sh
+            codesign -dv --verbose=4 Release-iphoneos/UnitTestsApp.app # for debugging that app is signed or not
       - save
   android-benchmark-runner:
     executor: ubuntu-disco
