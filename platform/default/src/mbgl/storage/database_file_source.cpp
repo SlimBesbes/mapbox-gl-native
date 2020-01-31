@@ -7,6 +7,7 @@
 #include <mbgl/storage/response.hpp>
 #include <mbgl/util/constants.hpp>
 #include <mbgl/util/logging.hpp>
+#include <mbgl/util/platform.hpp>
 #include <mbgl/util/thread.hpp>
 
 namespace mbgl {
@@ -149,7 +150,10 @@ class DatabaseFileSource::Impl {
 public:
     Impl(std::shared_ptr<FileSource> onlineFileSource, const std::string& cachePath)
         : thread(std::make_unique<util::Thread<DatabaseFileSourceThread>>(
-              "DatabaseFileSource", std::move(onlineFileSource), cachePath)) {}
+              util::ThreadPrioritySetterCustom(platform::EXPERIMENTAL_THREAD_PRIORITY_ARG_DATABASE),
+              "DatabaseFileSource",
+              std::move(onlineFileSource),
+              cachePath)) {}
 
     ActorRef<DatabaseFileSourceThread> actor() const { return thread->actor(); }
 

@@ -42,7 +42,8 @@ private:
 };
 
 AssetFileSource::AssetFileSource(const std::string& root)
-    : impl(std::make_unique<util::Thread<Impl>>("AssetFileSource", root)) {
+    : impl(std::make_unique<util::Thread<Impl>>(
+          util::ThreadPrioritySetterCustom(platform::EXPERIMENTAL_THREAD_PRIORITY_ARG_FILE), "AssetFileSource", root)) {
 }
 
 AssetFileSource::~AssetFileSource() = default;

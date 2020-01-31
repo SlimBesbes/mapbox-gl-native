@@ -131,7 +131,12 @@ public:
           onlineFileSource(std::move(onlineFileSource_)),
           supportsCacheOnlyRequests_(bool(databaseFileSource)),
           thread(std::make_unique<util::Thread<MainResourceLoaderThread>>(
-              "ResourceLoaderThread", assetFileSource, databaseFileSource, localFileSource, onlineFileSource)) {}
+              util::ThreadPrioritySetterCustom(platform::EXPERIMENTAL_THREAD_PRIORITY_ARG_WORKER),
+              "ResourceLoaderThread",
+              assetFileSource,
+              databaseFileSource,
+              localFileSource,
+              onlineFileSource)) {}
 
     std::unique_ptr<AsyncRequest> request(const Resource& resource, Callback callback) {
         auto req = std::make_unique<FileSourceRequest>(std::move(callback));

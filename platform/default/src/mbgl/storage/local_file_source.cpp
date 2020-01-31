@@ -36,8 +36,8 @@ public:
 };
 
 LocalFileSource::LocalFileSource()
-    : impl(std::make_unique<util::Thread<Impl>>("LocalFileSource")) {
-}
+    : impl(std::make_unique<util::Thread<Impl>>(
+          util::ThreadPrioritySetterCustom(platform::EXPERIMENTAL_THREAD_PRIORITY_ARG_FILE), "LocalFileSource")) {}
 
 LocalFileSource::~LocalFileSource() = default;
 

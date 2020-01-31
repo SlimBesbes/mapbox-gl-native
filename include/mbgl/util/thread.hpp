@@ -3,10 +3,11 @@
 #include <mbgl/actor/actor.hpp>
 #include <mbgl/actor/mailbox.hpp>
 #include <mbgl/actor/scheduler.hpp>
+#include <mbgl/platform/thread.hpp>
 #include <mbgl/util/platform.hpp>
 #include <mbgl/util/run_loop.hpp>
+#include <mbgl/util/thread_priority_setter.hpp>
 #include <mbgl/util/util.hpp>
-#include <mbgl/platform/thread.hpp>
 
 #include <cassert>
 #include <future>
@@ -37,25 +38,20 @@ namespace util {
 // - A `RunLoop` is created for the `Object` thread.
 // - `Object` can use `Timer` and do asynchronous I/O, like wait for sockets events.
 //
-template<class Object>
+template <typename Object>
 class Thread {
 public:
-    template <class... Args>
-    Thread(const std::string& name, Args&&... args) {
-
+    template <typename PrioritySetter, typename TupleArgs>
+    Thread(PrioritySetter&& ps, const std::string& name, TupleArgs&& args) {
         std::promise<void> running_;
         running = running_.get_future();
-
-        auto capturedArgs = std::make_tuple(std::forward<Args>(args)...);
-
-        thread = std::thread([
-            this,
-            name,
-            capturedArgs = std::move(capturedArgs),
-            runningPromise = std::move(running_)
-        ] () mutable {
+        thread = std::thread([this,
+                              name,
+                              capturedArgs = std::move(args),
+                              runningPromise = std::move(running_),
+                              prioritySetter = std::move(ps)]() mutable {
             platform::setCurrentThreadName(name);
-            platform::makeThreadLowPriority();
+            prioritySetter.setThreadPriority();
             platform::attachThread();
 
             // narrowing the scope to release the Object before we detach the thread
@@ -76,6 +72,16 @@ public:
             platform::detachThread();
         });
     }
+
+    template <typename... Args>
+    Thread(const std::string& name, Args&&... args)
+        : Thread(ThreadPrioritySetterLow{}, name, std::make_tuple(std::forward<Args>(args)...)) {}
+
+    template <typename PrioritySetter,
+              typename = typename std::enable_if<std::is_base_of<ThreadPrioritySetter, PrioritySetter>::value>::type,
+              typename... Args>
+    Thread(PrioritySetter&& ps, const std::string& name, Args&&... args)
+        : Thread(std::forward<PrioritySetter>(ps), name, std::make_tuple(std::forward<Args>(args)...)) {}
 
     ~Thread() {
         if (paused) {

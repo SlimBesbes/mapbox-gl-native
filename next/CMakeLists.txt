@@ -255,6 +255,7 @@ add_library(
     ${MBGL_ROOT}/include/mbgl/util/size.hpp
     ${MBGL_ROOT}/include/mbgl/util/string.hpp
     ${MBGL_ROOT}/include/mbgl/util/thread.hpp
+    ${MBGL_ROOT}/include/mbgl/util/thread_priority_setter.hpp
     ${MBGL_ROOT}/include/mbgl/util/tileset.hpp
     ${MBGL_ROOT}/include/mbgl/util/timer.hpp
     ${MBGL_ROOT}/include/mbgl/util/traits.hpp
