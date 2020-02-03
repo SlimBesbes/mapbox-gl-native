@@ -160,7 +160,8 @@ enum class Kind : int32_t {
     FormatExpression,
     FormatSectionOverride,
     NumberFormat,
-    ImageExpression
+    ImageExpression,
+    In
 };
 
 class Expression {
