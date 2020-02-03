@@ -402,7 +402,7 @@ void GeometryTileWorker::parse() {
                 std::unique_ptr<GeometryTileFeature> feature = geometryLayer->getFeature(i);
 
                 if (!filter(expression::EvaluationContext(static_cast<float>(this->id.overscaledZ), feature.get())
-                                .withCanonicalTileID(id.canonical)))
+                                .withCanonicalTileID(&id.canonical)))
                     continue;
 
                 const GeometryCollection& geometries = feature->getGeometries();

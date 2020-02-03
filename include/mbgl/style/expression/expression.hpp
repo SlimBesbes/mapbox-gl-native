@@ -54,14 +54,14 @@ public:
         return *this;
     };
 
-    EvaluationContext& withCanonicalTileID(const mbgl::CanonicalTileID& canonical_) noexcept {
+    EvaluationContext& withCanonicalTileID(const mbgl::CanonicalTileID* canonical_) noexcept {
         canonical = canonical_;
         return *this;
     };
 
     optional<float> zoom;
     optional<mbgl::Value> accumulated;
-    optional<mbgl::CanonicalTileID> canonical;
+    const mbgl::CanonicalTileID* canonical = nullptr;
     GeometryTileFeature const * feature = nullptr;
     optional<double> colorRampParameter;
     // Contains formatted section object, std::unordered_map<std::string, Value>.

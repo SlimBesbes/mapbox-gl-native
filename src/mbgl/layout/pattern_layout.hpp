@@ -110,7 +110,7 @@ public:
             auto feature = sourceLayer->getFeature(i);
             if (!leaderLayerProperties->layerImpl().filter(
                     style::expression::EvaluationContext(this->zoom, feature.get())
-                        .withCanonicalTileID(parameters.tileID.canonical)))
+                        .withCanonicalTileID(&parameters.tileID.canonical)))
                 continue;
 
             PatternLayerMap patternDependencyMap;
