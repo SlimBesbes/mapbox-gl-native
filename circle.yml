@@ -292,6 +292,30 @@ jobs:
             cd Build
             ../codesigning/codesign_all.sh
             codesign -dv --verbose=4 Release-iphoneos/UnitTestsApp.app # for debugging that app is signed or not
+      - run:
+          name: Login to IOS Google Cloud Platform
+          command: |
+            if [[ -n "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}" ]]; then
+              echo "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}" > iosAccount.json
+              gcloud auth activate-service-account --key-file iosAccount.json --project ios-mapbox-gl-native
+              rm iosAccount.json
+            fi
+      - run:
+          name: Run UnitTestsApp on Firebase
+          no_output_timeout: 20m
+          command: |
+            if [[ -n "${GCLOUD_SERVICE_ACCOUNT_JSON_IOS}" ]]; then
+              # arrange files in a way Firebase expects it, and package them in a zip file
+              cd test/ios/Build
+              cp ../UnitTestsApp_iphoneos13.2-arm64e-release.xctestrun .
+              zip testapp.zip -r Release-iphoneos/UnitTestsApp.app --quiet
+              zip testapp.zip UnitTestsApp_iphoneos13.2-arm64e-release.xctestrun
+              gcloud firebase test ios models list
+              gcloud firebase test ios run \
+                --test testapp.zip \
+                --device model=iphonexs,version=12.0,locale=en,orientation=portrait --xcode-version=11.1 --timeout 20m \
+                --verbosity=debug --no-record-video --results-dir ios-unit-test-app-${CIRCLE_BUILD_NUM}
+            fi
       - save
   android-benchmark-runner:
     executor: ubuntu-disco
