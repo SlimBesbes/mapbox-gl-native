@@ -280,10 +280,9 @@ jobs:
           name: Build IOS UnitTestsApp
           command: |
             cd test/ios
-            cmake ../../next -B Build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DMBGL_IOS_UNIT_TEST=ON
-            cd Build
-            xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj -scheme UnitTestsApp build-for-testing -arch arm64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Release
-            xcodebuild -sdk iphoneos -project Mapbox\ GL\ Native.xcodeproj build -target UnitTestsAppTests -arch arm64 CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Release
+            cmake ../../next -B Build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DMBGL_IOS_UNIT_TEST=1 -DCMAKE_OSX_ARCHITECTURES=arm64
+            cmake --build Build --target UnitTestsApp UnitTestsAppTests --config Release
+            ccache -s
       - run:
           name: Codesign UnitTestsApp for running on a physical device
           command: |
