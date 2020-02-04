@@ -11,7 +11,7 @@ namespace expression {
 class In : public Expression {
 public:
     In(std::unique_ptr<Expression> needle_, std::unique_ptr<Expression> haystack_) :
-        Expression(Kind::In, bool),
+        Expression(Kind::In, type::Boolean),
         needle(std::move(needle_)),
         haystack(std::move(haystack_))
     {}
@@ -38,6 +38,10 @@ public:
 private:
     std::unique_ptr<Expression> needle;
     std::unique_ptr<Expression> haystack;
+    static bool isComparableType(type::Type type);
+    static bool isComparableRuntimeValue(type::Type type);
+    static bool isSearchableRuntimeValue(type::Type type);
+
 };
 
 } // namespace expression

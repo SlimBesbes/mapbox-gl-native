@@ -6,6 +6,7 @@
 
 #include <mbgl/style/expression/assertion.hpp>
 #include <mbgl/style/expression/at.hpp>
+#include <mbgl/style/expression/in.hpp>
 #include <mbgl/style/expression/boolean_operator.hpp>
 #include <mbgl/style/expression/case.hpp>
 #include <mbgl/style/expression/coalesce.hpp>
@@ -113,6 +114,7 @@ MAPBOX_ETERNAL_CONSTEXPR const auto expressionRegistry =
         {"any", Any::parse},
         {"array", Assertion::parse},
         {"at", At::parse},
+        {"in", In::parse},
         {"boolean", Assertion::parse},
         {"case", Case::parse},
         {"coalesce", Coalesce::parse},

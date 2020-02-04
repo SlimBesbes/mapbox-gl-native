@@ -162,6 +162,7 @@ add_library(
     ${MBGL_ROOT}/include/mbgl/style/conversion_impl.hpp
     ${MBGL_ROOT}/include/mbgl/style/expression/assertion.hpp
     ${MBGL_ROOT}/include/mbgl/style/expression/at.hpp
+    ${MBGL_ROOT}/include/mbgl/style/expression/in.hpp
     ${MBGL_ROOT}/include/mbgl/style/expression/boolean_operator.hpp
     ${MBGL_ROOT}/include/mbgl/style/expression/case.hpp
     ${MBGL_ROOT}/include/mbgl/style/expression/check_subtype.hpp
@@ -630,6 +631,7 @@ add_library(
     ${MBGL_ROOT}/src/mbgl/style/custom_tile_loader.hpp
     ${MBGL_ROOT}/src/mbgl/style/expression/assertion.cpp
     ${MBGL_ROOT}/src/mbgl/style/expression/at.cpp
+    ${MBGL_ROOT}/src/mbgl/style/expression/in.cpp
     ${MBGL_ROOT}/src/mbgl/style/expression/boolean_operator.cpp
     ${MBGL_ROOT}/src/mbgl/style/expression/case.cpp
     ${MBGL_ROOT}/src/mbgl/style/expression/check_subtype.cpp
